@@ -5,11 +5,14 @@ import { CatModule } from './Cats/cat.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './Entity/user.entity';
 import { UserModule } from './User/user.module';
+import{ConfigModule} from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forRoot({
+  imports: [ConfigModule.forRoot(),
+    TypeOrmModule.forRoot({
+  
     type: 'postgres',
-    host: 'localhost',
+    host: process.env.HOSTNAME,
     port: 5433,
     username: 'postgres',
     password: 'testpass',

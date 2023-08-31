@@ -1,22 +1,23 @@
-import { Controller, Get, Param, Post, Body, Delete, Req, Put, UseGuards } from "@nestjs/common";
-import { UserService } from "./user.service";
+import { Controller, Get, Param, Post, Body, Delete, Req, Put, UseGuards, ParseIntPipe, HttpStatus, UsePipes } from "@nestjs/common";
+import { UserService, ValidationPipe } from "./user.service";
 import { Request } from "express";
 import { AuthGuard } from "./auth.guard";
+import {  CreateUserDto } from "./create-userdto";
+
 
 
 @Controller('user')
-@UseGuards(AuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) { }
-  
+
   @Post()
-  ragisterUser(@Req() req: Request) {
-    const DATA = req.body
-    return this.userService.register(DATA);
+  ragisterUser(@Body() ureateUserDto: CreateUserDto) {
+    console.log(ureateUserDto);
+    return this.userService.register(ureateUserDto);
   }
 
   @Get("/findall")
-  findAll(){
+  findAll() {
     return this.userService.findAll()
   }
 
@@ -26,26 +27,29 @@ export class UserController {
     return this.userService.delete(Id);
   }
 
-  @Get(":id")
-  findById(@Param() params: any){ 
-    console.log(params.id , "params.id")
-    return this.userService.findById(params.id);
-  }
 
+
+  @Get(":id")
+  @UsePipes(new ValidationPipe())
+  findById(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: number) {
+    console.log(id, "params.id")
+    return this.userService.findById(id);
+  }
+  @UseGuards(AuthGuard)
   @Put('/update/:id')
-  updateuser(@Param() param: any, @Req() req: Request): any { 
-    const ID  = param?.id
+  updateuser(@Param() param: any, @Req() req: Request): any {
+    const ID = param?.id
     const data = req.body
     return this.userService.update(ID, data);
   }
 
   @Post('/login')
-  login(@Req() req: Request):any{ 
-    const data = req.body
+  login(@Body() createUserDto: CreateUserDto): any {
+    const data = createUserDto;
     return this.userService.login(data);
   }
 
-   
-  
+
+
 
 }

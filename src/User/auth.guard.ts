@@ -15,6 +15,7 @@ export class AuthGuard implements CanActivate {
     
     
     console.log(token);
+    console.log(process.env.DATABASE_NAME)
     if (!token) {
       throw new UnauthorizedException();
     }

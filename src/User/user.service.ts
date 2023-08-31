@@ -2,7 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/Entity/user.entity";
 import { Repository } from 'typeorm';
-import { sign } from "jsonwebtoken"
+import { sign } from "jsonwebtoken";
+import { PipeTransform,ArgumentMetadata } from '@nestjs/common';
+import{bcrypt} from"bcrypt";
 @Injectable()
 export class UserService {
   constructor(
@@ -76,4 +78,10 @@ export class UserService {
 
 
 
+}
+@Injectable()
+export class ValidationPipe implements PipeTransform {
+  transform(value: number, metadata: ArgumentMetadata) {
+    return value;
+  }
 }
