@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { sign } from "jsonwebtoken";
 import { PipeTransform,ArgumentMetadata } from '@nestjs/common';
 import{bcrypt} from"bcrypt";
+import { error } from "console";
 @Injectable()
 export class UserService {
   constructor(
@@ -25,11 +26,18 @@ export class UserService {
   }
 
   async findById(id) {
+    
     const user = await this.usersRepository.findOneBy({
       id: parseInt(id)
+
     })
-    return user
+    
+    
+    return user;
   }
+  
+
+
 
 
   async login(data) {

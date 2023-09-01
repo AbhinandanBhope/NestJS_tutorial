@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body, Delete, Req, Put, UseGuards, ParseIntPipe, HttpStatus, UsePipes } from "@nestjs/common";
+import { Controller, Get, Param, Post, Body, Delete, Req, Put, UseGuards,HttpException, ParseIntPipe, HttpStatus, UsePipes } from "@nestjs/common";
 import { UserService, ValidationPipe } from "./user.service";
 import { Request } from "express";
 import { AuthGuard } from "./auth.guard";
@@ -30,11 +30,31 @@ export class UserController {
 
 
   @Get(":id")
+  
   @UsePipes(new ValidationPipe())
-  findById(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: number) {
+  
+  async findById(@Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: number) {
     console.log(id, "params.id")
-    return this.userService.findById(id);
+    
+  
+   const reult =  await   this.userService.findById(id);
+   if(!reult){
+
+    throw new HttpException({
+      status: HttpStatus.FORBIDDEN,
+      error: 'This is a custom message',
+    }, HttpStatus.FORBIDDEN, {
+      cause: Error
+    })
+
+   }
+  return reult;
+  
+  
+
   }
+
+
   @UseGuards(AuthGuard)
   @Put('/update/:id')
   updateuser(@Param() param: any, @Req() req: Request): any {
