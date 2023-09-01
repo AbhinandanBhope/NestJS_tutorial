@@ -3,6 +3,7 @@ import { UserService, ValidationPipe } from "./user.service";
 import { Request } from "express";
 import { AuthGuard } from "./auth.guard";
 import {  CreateUserDto } from "./create-userdto";
+import { ForbiddenException } from "./forbidden.exception";
 
 
 
@@ -20,8 +21,12 @@ export class UserController {
   findAll() {
     return this.userService.findAll()
   }
+ 
+
 
   @Delete('/delete/:id')
+  
+@UseGuards(AuthGuard)
   remove(@Param() param: any) {
     const Id = param.id;
     return this.userService.delete(Id);
@@ -40,12 +45,7 @@ export class UserController {
    const reult =  await   this.userService.findById(id);
    if(!reult){
 
-    throw new HttpException({
-      status: HttpStatus.FORBIDDEN,
-      error: 'This is a custom message',
-    }, HttpStatus.FORBIDDEN, {
-      cause: Error
-    })
+    throw new ForbiddenException();
 
    }
   return reult;
@@ -64,8 +64,8 @@ export class UserController {
   }
 
   @Post('/login')
-  login(@Body() createUserDto: CreateUserDto): any {
-    const data = createUserDto;
+  login(@Body() Body ): any {
+    const data = Body;
     return this.userService.login(data);
   }
 
